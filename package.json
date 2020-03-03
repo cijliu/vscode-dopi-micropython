@@ -1,16 +1,17 @@
 {
 	"name": "dopi-micropython",
 	"displayName": "dopi-micropython",
+	"publisher": "Dopi-micropython",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
-		"vscode": "^1.42.0"
+		"vscode": "^1.24.1"
 	},
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -18,6 +19,22 @@
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "dopi.search",
+				"title": "Dopi Search device"
+			},
+			{
+				"command": "dopi.connect",
+				"title": "Dopi Connect device"
+			},
+			{
+				"command": "dopi.run",
+				"title": "Dopi Run Micropython"
+			},
+			{
+				"command": "dopi.stop",
+				"title": "Dopi Stop Micropython"
 			}
 		]
 	},
