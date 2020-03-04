@@ -29,6 +29,10 @@
 				"title": "Dopi Connect device"
 			},
 			{
+				"command": "dopi.disconnect",
+				"title": "Dopi Disconnect device"
+			},
+			{
 				"command": "dopi.run",
 				"title": "Dopi Run Micropython"
 			},
