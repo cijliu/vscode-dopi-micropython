@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as os from 'os';
 import {exec, spawn} from 'child_process';
 import * as iconv from 'iconv-lite';
+import { worker } from 'cluster';
 function getSerialTollPath():string {
 	return path.join(__dirname, '..', '..', 'ampy').replace(/\\/g, "/");
 }
@@ -53,7 +54,7 @@ function connectDopi(port:string){
 			let terminal:vscode.Terminal = createTerminal();
 			terminal.sendText(cmd);
 			setCOM(port);
-			terminal.sendText('print("Welcome")');
+			//terminal.sendText('print("Welcome")');
 			vscode.window.showInformationMessage(port.concat(' Connect Successful!'))
 		}
 	);
@@ -68,7 +69,23 @@ function disconnectDopi(port:string){
 let terminal:vscode.Terminal|undefined = undefined;
 function createTerminal(): vscode.Terminal {
 	if(terminal != undefined){
-		return terminal;
+		var exist = false;
+		var terminals = vscode.window.terminals;
+		terminals.forEach(element => {
+			if(element.name == 'Dopi Terminal'){
+				terminal = element;
+				exist = true;
+				return ;
+			}
+		});
+		if(exist){
+			return terminal;
+		}
+		else{
+			console.log('kill terminal')
+			setCOM(undefined);
+		}
+		
 	}
 	terminal = vscode.window.createTerminal({
 		name:'Dopi Terminal'
@@ -138,11 +155,18 @@ function showSerialport(){
 		serialport.show()
 	}
 }
+function getCodeFormat(code:string):string{
+	return "".concat(String.fromCharCode(5), code, String.fromCharCode(4));
+}
+function GetStopCodeFormat():string {
+	return "".concat(String.fromCharCode(3));
+}
 /* commands export */
 export function dopi_search() : vscode.Disposable{
     return (vscode.commands.registerCommand('dopi.search', () => {
 		vscode.window.showInformationMessage("Waitting Search.")
-		showSerialport()
+		createTerminal();
+		showSerialport();
 	}));
 }
 export function dopi_connect(): vscode.Disposable{
@@ -156,5 +180,33 @@ export function dopi_disconnect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.disconnect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to disconnect: " + port)
 		disconnectDopi(port);
+	}));
+}
+
+export function micropython_run(): vscode.Disposable{
+	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
+		let code = vscode.window.activeTextEditor?.document.getText();
+		if(code != undefined){
+			code = getCodeFormat(code)
+			terminal = createTerminal()
+			let i:number = 0;
+			let len :number = code.length
+			let bufferLen = 1024
+			while((len-i) > bufferLen){
+				let s:string = code.substring(i, i+bufferLen)
+				terminal.sendText(s,false)
+				i = i + bufferLen;
+			}
+			terminal.sendText(code.substring(i),false)
+			
+		}
+	}));
+}
+
+export function micropython_stop(): vscode.Disposable{
+	return (vscode.commands.registerCommand('dopi.stop', (port:string) => {
+		let code = GetStopCodeFormat();
+		terminal = createTerminal()
+		terminal.sendText(code)
 	}));
 }
