@@ -12,7 +12,6 @@ export class DopiProvider implements TreeDataProvider<DataItem> {
     stop = new DataItem('');
     resources_path = join(__dirname, '..','..','resources');
     constructor() {
-
         this.device.label = 'Device disconnect';
         this.device.contextValue = "Device";
         this.device.iconPath = Uri.file(join(this.resources_path, this.connect?'serial-connect.svg':'serial-disconnect.svg'));
@@ -31,9 +30,8 @@ export class DopiProvider implements TreeDataProvider<DataItem> {
             this.device,
             this.run,
             this.stop,
-            //new DataItem(join(__dirname,'..', '..'  ,'img', 'python.svg'), [new DataItem('line2-sub1'), new DataItem('line2-sub2')]),
-            //new DataItem('line3', [new DataItem('line3-sub1'), new DataItem('line3-sub2')])
         ];
+
     }
     update(){
         this.device.iconPath = Uri.file(join(this.resources_path, this.connect?'serial-connect.svg':'serial-disconnect.svg'));

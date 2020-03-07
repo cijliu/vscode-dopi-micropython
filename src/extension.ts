@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { dopi_search, dopi_connect, dopi_disconnect, micropython_run, micropython_stop } from './modules/serial';
 import { DopiProvider } from './modules/dopiProvider';
 import { dopi_ui_update } from './modules/dopiUI';
+import { join } from 'path';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
