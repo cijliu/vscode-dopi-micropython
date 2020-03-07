@@ -15,6 +15,23 @@
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "Dopi-export",
+                    "title": "Dopi",
+                    "icon": "resources/device.svg"
+                }
+            ]
+		},
+		"views": {
+            "Dopi-export": [
+                {
+                    "id": "Dopi-export-node",
+                    "name": "Dopi"
+				}
+            ]
+		},
 		"commands": [
 			{
 				"command": "extension.helloWorld",
@@ -39,6 +56,10 @@
 			{
 				"command": "dopi.stop",
 				"title": "Dopi Stop Micropython"
+			},
+			{
+				"command": "dopi.ui.update",
+				"title": "Update"
 			}
 		]
 	},
