@@ -123,6 +123,9 @@ function showSerialport(){
 			items = [];
 			ports.forEach(function(item){
 				let description:string = 'Click to connect Dopi.';
+				if(item.trim() === 'cant find any serial in system.') {
+					description = '';
+				}
 				items.push({label:item.trim(), description:description})
 			});
 			let serialport = vscode.window.createQuickPick();

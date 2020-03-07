@@ -11,8 +11,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*",
-		"onCommand:extension.helloWorld"
+		"onView:Dopi-export-node"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

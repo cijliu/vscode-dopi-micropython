@@ -6,10 +6,10 @@ export function dopi_ui_update(dopiDataProvider:DopiProvider): vscode.Disposable
 		// The code you place here will be executed every time your command is executed
         dopiDataProvider.connect = isConnect();
 		if(dopiDataProvider.connect){
-			dopiDataProvider.device.label = 'Device connect';
+			dopiDataProvider.device.label = 'Device had connected';
 		}
 		else {
-			dopiDataProvider.device.label = 'Device disconnect';
+			dopiDataProvider.device.label = 'Click to search serial';
 		}
 		dopiDataProvider.update();
 		vscode.window.registerTreeDataProvider("Dopi-export-node", dopiDataProvider);

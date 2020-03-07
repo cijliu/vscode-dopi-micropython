@@ -10,6 +10,7 @@ import { join } from 'path';
 export function activate(context: vscode.ExtensionContext) {
 	let dopiDataProvider = new DopiProvider();
 	vscode.window.registerTreeDataProvider("Dopi-export-node", dopiDataProvider);
+	vscode.window.showInformationMessage('Welcome to Dopi.')
 	//register commands
 	context.subscriptions.push( dopi_search() );
 	context.subscriptions.push( dopi_connect() );

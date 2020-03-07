@@ -12,7 +12,7 @@ export class DopiProvider implements TreeDataProvider<DataItem> {
     stop = new DataItem('');
     resources_path = join(__dirname, '..','..','resources');
     constructor() {
-        this.device.label = 'Device disconnect';
+        this.device.label = 'Click to search serial';
         this.device.contextValue = "Device";
         this.device.iconPath = Uri.file(join(this.resources_path, this.connect?'serial-connect.svg':'serial-disconnect.svg'));
         this.device.command =  { command: 'dopi.search', title: "Connect"};
@@ -46,7 +46,6 @@ export class DopiProvider implements TreeDataProvider<DataItem> {
         }
 
         return element.children;
-        //return [new DataItem('Serial')];
     }
 }
 
