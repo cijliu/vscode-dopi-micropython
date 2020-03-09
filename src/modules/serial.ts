@@ -191,23 +191,27 @@ export function dopi_disconnect(): vscode.Disposable{
 		vscode.commands.executeCommand('dopi.ui.update');
 	}));
 }
-
 export function micropython_run(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
 		let code = vscode.window.activeTextEditor?.document.getText();
 		if(code != undefined){
 			code = getCodeFormat(code)
 			terminal = createTerminal()
-			let i:number = 0;
-			let len :number = code.length
-			let bufferLen = 1024
-			while((len-i) > bufferLen){
-				let s:string = code.substring(i, i+bufferLen)
-				terminal.sendText(s,false)
-				i = i + bufferLen;
-			}
-			terminal.sendText(code.substring(i),false)
-
+			let lineBreak = '\n';
+			let lines = code.split(lineBreak)
+			lines.forEach((l, i)=>{
+				let line = l + lineBreak
+				//VSCode DEBUG: if you send  large code immediately, the terminal will run error, 
+				//				so we only delay send each line wait a moment :)
+				setTimeout(() => {
+					if(terminal === undefined){
+						return
+					}
+					terminal.sendText(line,false)
+				}, i);
+				
+			})
+			
 		}
 	}));
 }
