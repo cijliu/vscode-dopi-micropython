@@ -52,7 +52,13 @@ function connectDopi(port:string){
 				return;
 			}
 			let terminal:vscode.Terminal = createTerminal();
-			terminal.sendText(cmd);
+			terminal.sendText(String.fromCharCode(3))
+			setTimeout(() => {
+				terminal.sendText('clear');
+			}, 10); 
+			setTimeout(() => {
+				terminal.sendText(cmd);
+			}, 100); 
 			setCOM(port);
 			//terminal.sendText('print("Welcome")');
 			vscode.window.showInformationMessage(port.concat(' Connect Successful!'))
@@ -220,6 +226,6 @@ export function micropython_stop(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.stop', (port:string) => {
 		let code = GetStopCodeFormat();
 		terminal = createTerminal()
-		terminal.sendText(code)
+		terminal.sendText(code,false)
 	}));
 }
