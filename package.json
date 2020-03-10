@@ -3,7 +3,7 @@
 	"displayName": "Dopi",
 	"publisher": "Dopi",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.27.0"
 	},
