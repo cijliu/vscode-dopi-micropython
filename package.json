@@ -1,9 +1,10 @@
 {
 	"name": "dopi-micropython",
 	"displayName": "Dopi",
-	"publisher": "Dopi",
+	"publisher": "cijliu",
 	"description": "",
 	"version": "0.0.1",
+	"icon": "dopi.png",
 	"engines": {
 		"vscode": "^1.27.0"
 	},

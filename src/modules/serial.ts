@@ -56,6 +56,7 @@ function connectDopi(port:string){
 			setCOM(port);
 			//terminal.sendText('print("Welcome")');
 			vscode.window.showInformationMessage(port.concat(' Connect Successful!'))
+			vscode.commands.executeCommand('dopi.ui.update');
 		}
 	);
 
@@ -65,6 +66,7 @@ function disconnectDopi(port:string){
 	terminal.sendText(String.fromCharCode(24), false);
 	vscode.window.showInformationMessage(port.concat(' Disconnect Successful'))
 	setCOM(undefined);
+	vscode.commands.executeCommand('dopi.ui.update');
 }
 let terminal:vscode.Terminal|undefined = undefined;
 function createTerminal(): vscode.Terminal {
@@ -180,7 +182,7 @@ export function dopi_connect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.connect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to connect: " + port)
 		connectDopi(port);
-		vscode.commands.executeCommand('dopi.ui.update');
+		//vscode.commands.executeCommand('dopi.ui.update');
 
 	}));
 }
@@ -188,7 +190,7 @@ export function dopi_disconnect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.disconnect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to disconnect: " + port)
 		disconnectDopi(port);
-		vscode.commands.executeCommand('dopi.ui.update');
+		//vscode.commands.executeCommand('dopi.ui.update');
 	}));
 }
 
