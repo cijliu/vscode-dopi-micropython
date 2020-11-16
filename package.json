@@ -28,7 +28,11 @@
 			"Dopi-export": [
 				{
 					"id": "Dopi-export-node",
-					"name": "Dopi"
+					"name": "Debug"
+				},
+				{
+					"id": "Dopi-examples-node",
+					"name": "Examples"
 				}
 			]
 		},
