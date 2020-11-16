@@ -5,6 +5,7 @@
 	"description": "",
 	"version": "0.0.2",
 	"icon": "dopi.png",
+
 	"engines": {
 		"vscode": "^1.27.0"
 	},
@@ -29,7 +30,11 @@
 			"Dopi-export": [
 				{
 					"id": "Dopi-export-node",
-					"name": "Dopi"
+					"name": "Debug"
+				},
+				{
+					"id": "Dopi-examples-node",
+					"name": "Examples"
 				}
 			]
 		},
@@ -58,7 +63,19 @@
 				"command": "dopi.ui.update",
 				"title": "Update"
 			}
-		]
+		],
+		"keybindings": [{
+			"command": "dopi.run",
+			"key": "f5",
+			"mac": "f5",
+			"when": "editorTextFocus"
+		},
+		{
+			"command": "dopi.stop",
+			"key": "f6",
+			"mac": "f6",
+			"when": "editorTextFocus"
+		}]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
