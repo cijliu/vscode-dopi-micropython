@@ -41,6 +41,21 @@ function getSerialConnectCommand(port:string):string {
 	}
 	return cmd;
 }
+function connectTelnet(ip:string){
+	let cmd:string = 'telnet ';
+	let check_cmd:string = cmd.concat(ip);
+	vscode.window.showInformationMessage(check_cmd)
+	let terminal:vscode.Terminal = createTerminal();
+	terminal.sendText(check_cmd);
+
+
+}
+function disconnectTelnet(){
+	let terminal:vscode.Terminal = createTerminal();
+	terminal.sendText("exit");
+	vscode.window.showInformationMessage(' Disconnect Successful')
+	setServerIP(undefined);
+}
 function connectDopi(port:string){
 	let cmd:string = getSerialConnectCommand(port);
 	let check_cmd:string = cmd.concat(' -q dopi');
@@ -99,20 +114,28 @@ function createTerminal(): vscode.Terminal {
 	var lineBreak = os.type() === "Windows_NT" ? "\r\n" : "\n";
 	terminal.show();
 	terminal.sendText("".concat(lineBreak));
-	terminal.sendText("Set-ItemProperty HKCU:Console VirtualTerminalLevel -Type DWORD 1");
-	terminal.sendText("".concat(lineBreak));
-	terminal.sendText("clear".concat(lineBreak));
+	//terminal.sendText("Set-ItemProperty HKCU:Console VirtualTerminalLevel -Type DWORD 1");
+	//terminal.sendText("".concat(lineBreak));
+	//terminal.sendText("clear".concat(lineBreak));
 	return terminal;
 }
 let COM:string|undefined = undefined;
+let SERVER:string|undefined = undefined;
+let MICROPYTHON_STATUS:boolean = false;
 function getCOM():string|undefined{
 	return COM;
 }
 function setCOM(com:string|undefined){
 	COM = com;
 }
+function getServerIP():string|undefined{
+	return SERVER;
+}
+function setServerIP(ip:string|undefined){
+	SERVER = ip;
+}
 export function isConnect(): boolean{
-	return (getCOM() !== undefined) ? true:false;
+	return (getCOM() !== undefined || getServerIP() !== undefined) ? true:false;
 }
 let items:vscode.QuickPickItem[] = [];
 function showSerialport(){
@@ -174,18 +197,69 @@ function getCodeFormat(code:string):string{
 function GetStopCodeFormat():string {
 	return "".concat(String.fromCharCode(3));
 }
+function GetStartMicropython():string {
+	return "".concat("micropython");
+}
+function GetStopMicropython():string {
+	return "".concat(String.fromCharCode(4));
+}
 /* commands export */
 export function dopi_search() : vscode.Disposable{
     return (vscode.commands.registerCommand('dopi.search', () => {
-		vscode.window.showInformationMessage("Waitting Search.")
+		vscode.window.showInformationMessage("Waitting Search.");
 		createTerminal();
-		showSerialport();
+		//showSerialport();
+		if(isConnect()){
+			vscode.commands.executeCommand('dopi.disconnect');
+			return;
+		}
+		vscode.window.showInputBox(
+			{
+				password:false,
+				ignoreFocusOut:true, 
+				placeHolder:'例如： 192.168.137.25',
+				prompt:'输入Dopi设备IP进行连接', 
+			
+			}
+		).then(function(msg){
+			vscode.window.showInformationMessage("msg: " + msg)
+			if(msg == undefined) {
+				vscode.window.showInformationMessage("msg is null" )
+				return;
+			}
+			let ip = msg.split('.');
+			let key;
+			if(ip.length != 4){
+				vscode.window.showInformationMessage('ip format error!');
+				return;
+			}
+			for(key in ip)
+			{
+			  //vscode.window.showInformationMessage("key: " + parseInt(ip[key]))
+			  let num  =Number(ip[key]);
+			  if (isNaN(num) || num > 255){
+				vscode.window.showInformationMessage('ip format error!');
+				return false;
+			  }
+			}
+		   
+			setServerIP(msg);
+			//vscode.window.showInformationMessage("set ip: " + getServerIP())
+			vscode.commands.executeCommand('dopi.connect');
+		});
 	}));
 }
 export function dopi_connect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.connect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to connect: " + port)
-		connectDopi(port);
+		vscode.window.showInformationMessage("Try to connect: " + getServerIP())
+		//connectDopi(port);
+		let ip:string|undefined = getServerIP();
+		if(ip == undefined){
+			vscode.commands.executeCommand('dopi.search');
+			return;
+		}
+		connectTelnet(ip);
 		vscode.commands.executeCommand('dopi.ui.update');
 
 	}));
@@ -193,30 +267,49 @@ export function dopi_connect(): vscode.Disposable{
 export function dopi_disconnect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.disconnect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to disconnect: " + port)
-		disconnectDopi(port);
+
+		//disconnectDopi(port);
+		disconnectTelnet()
 		vscode.commands.executeCommand('dopi.ui.update');
 	}));
 }
 export function micropython_run(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
+		if(!isConnect()){
+			vscode.window.showInformationMessage("请先进行设备连接")
+			return;
+		}
+		if(MICROPYTHON_STATUS){
+			vscode.commands.executeCommand('dopi.stop');
+			setTimeout(()=>{
+				vscode.commands.executeCommand('dopi.run');
+			}, 500);
+			return;
+
+		}
+		MICROPYTHON_STATUS = true;
 		let code = vscode.window.activeTextEditor?.document.getText();
 		if(code != undefined){
 			code = getCodeFormat(code)
 			terminal = createTerminal()
 			let lineBreak = '\n';
 			let lines = code.split(lineBreak)
-			lines.forEach((l, i)=>{
-				let line = l + lineBreak
-				//VSCode DEBUG: if you send  large code immediately, the terminal will run error, 
-				//				so we only delay send each line wait a moment :)
-				setTimeout(() => {
-					if(terminal === undefined){
-						return
-					}
-					terminal.sendText(line,false)
-				}, i);
-				
-			})
+			terminal.sendText(GetStartMicropython())
+			setTimeout(()=>{
+				lines.forEach((l, i)=>{
+					let line = l + lineBreak
+					//VSCode DEBUG: if you send  large code immediately, the terminal will run error, 
+					//				so we only delay send each line wait a moment :)
+					setTimeout(() => {
+						if(terminal === undefined){
+							return
+						}
+						terminal.sendText(line,false)
+					}, i);
+					
+				})
+			}, 200);
+			
 			
 		}
 	}));
@@ -224,8 +317,23 @@ export function micropython_run(): vscode.Disposable{
 
 export function micropython_stop(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.stop', (port:string) => {
+		if(!isConnect()){
+			vscode.window.showInformationMessage("请先进行设备连接")
+			return;
+		}
+		if(!MICROPYTHON_STATUS){
+			vscode.window.showInformationMessage("没有程序正在运行")
+			return;
+		}
+		MICROPYTHON_STATUS = false;
 		let code = GetStopCodeFormat();
 		terminal = createTerminal()
 		terminal.sendText(code,false)
+		setTimeout(()=>{
+			terminal = createTerminal()
+			code = GetStopMicropython();
+			terminal.sendText(code,false)
+		},200);
+		
 	}));
 }
