@@ -44,8 +44,9 @@ function getSerialConnectCommand(port:string):string {
 function connectTelnet(ip:string){
 	let cmd:string = 'telnet ';
 	let check_cmd:string = cmd.concat(ip);
-	vscode.window.showInformationMessage(check_cmd)
+	//vscode.window.showInformationMessage(check_cmd)
 	let terminal:vscode.Terminal = createTerminal();
+	terminal.sendText(GetStopCodeFormat());
 	terminal.sendText(check_cmd);
 
 
@@ -53,6 +54,7 @@ function connectTelnet(ip:string){
 function disconnectTelnet(){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText("exit");
+	terminal.sendText(GetStopCodeFormat());
 	vscode.window.showInformationMessage(' Disconnect Successful')
 	setServerIP(undefined);
 }
@@ -208,7 +210,7 @@ function GetStopMicropython():string {
 /* commands export */
 export function dopi_search() : vscode.Disposable{
     return (vscode.commands.registerCommand('dopi.search', () => {
-		vscode.window.showInformationMessage("Waitting Search.");
+		//vscode.window.showInformationMessage("Waitting Search.");
 		createTerminal();
 		//showSerialport();
 		if(isConnect()){
@@ -224,9 +226,9 @@ export function dopi_search() : vscode.Disposable{
 
 			}
 		).then(function(msg){
-			vscode.window.showInformationMessage("msg: " + msg)
+			//vscode.window.showInformationMessage("msg: " + msg)
 			if(msg == undefined) {
-				vscode.window.showInformationMessage("msg is null" )
+				//vscode.window.showInformationMessage("msg is null" )
 				return;
 			}
 			let ip = msg.split('.');
@@ -254,7 +256,7 @@ export function dopi_search() : vscode.Disposable{
 export function dopi_connect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.connect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to connect: " + port)
-		vscode.window.showInformationMessage("Try to connect: " + getServerIP())
+		//vscode.window.showInformationMessage("Try to connect: " + getServerIP())
 		//connectDopi(port);
 		let ip:string|undefined = getServerIP();
 		if(ip == undefined){
