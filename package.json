@@ -4,7 +4,7 @@
 	"publisher": "cijliu",
 	"description": "",
 	"version": "0.0.2",
-	"icon": "dopi.png",
+	"icon": "./images/dopi.png",
 
 	"engines": {
 		"vscode": "^1.27.0"
