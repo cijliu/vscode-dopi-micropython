@@ -3,8 +3,8 @@
 	"displayName": "Dopi",
 	"publisher": "cijliu",
 	"description": "",
-	"version": "0.0.2",
-	"icon": "./images/dopi.png",
+	"version": "0.0.4",
+	"icon": "images/dopi.png",
 
 	"engines": {
 		"vscode": "^1.27.0"
@@ -54,6 +54,10 @@
 			{
 				"command": "dopi.run",
 				"title": "Dopi Run Micropython"
+			},
+			{
+				"command": "dopi.micropython_install",
+				"title": "Micropython install library from github"
 			},
 			{
 				"command": "dopi.stop",

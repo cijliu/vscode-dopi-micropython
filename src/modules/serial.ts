@@ -4,6 +4,7 @@ import * as os from 'os';
 import {exec, spawn} from 'child_process';
 import * as iconv from 'iconv-lite';
 import { worker } from 'cluster';
+import {language} from './language'
 function getSerialTollPath():string {
 	return path.join(__dirname, '..', '..', 'ampy').replace(/\\/g, "/");
 }
@@ -55,7 +56,6 @@ function disconnectTelnet(){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText("exit");
 	terminal.sendText(GetStopCodeFormat());
-	vscode.window.showInformationMessage(' Disconnect Successful')
 	setServerIP(undefined);
 }
 function connectDopi(port:string){
@@ -78,7 +78,7 @@ function connectDopi(port:string){
 			}, 100);
 			setCOM(port);
 			//terminal.sendText('print("Welcome")');
-			vscode.window.showInformationMessage(port.concat(' Connect Successful!'))
+			vscode.window.showInformationMessage(port.concat(language.message.connect_successful))
 			vscode.commands.executeCommand('dopi.ui.update');
 		}
 	);
@@ -87,7 +87,7 @@ function connectDopi(port:string){
 function disconnectDopi(port:string){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText(String.fromCharCode(24), false);
-	vscode.window.showInformationMessage(port.concat(' Disconnect Successful'))
+	vscode.window.showInformationMessage(port.concat(language.message.disconnect_successful))
 	setCOM(undefined);
 	vscode.commands.executeCommand('dopi.ui.update');
 }
@@ -149,7 +149,7 @@ function showSerialport(){
 		{ encoding: "binary" },
 		function(error, stdout, stderr) {
 			if(error){
-				vscode.window.showInformationMessage('Search serial port fail!');
+				//vscode.window.showInformationMessage('Search serial port fail!');
 				return;
 			}
 			let ports = iconv.decode(Buffer.alloc(stdout.toString().length, stdout.toString(), "binary"), "cp936").replace(/\[|\]|\'/g, "").split(",");
@@ -221,20 +221,24 @@ export function dopi_search() : vscode.Disposable{
 			{
 				password:false,
 				ignoreFocusOut:true,
-				placeHolder:'例如： 192.168.137.25',
-				prompt:'输入Dopi设备IP进行连接',
+				placeHolder:language.connect_connect.placeHolder,
+				prompt:language.connect_connect.prompt,
 
 			}
 		).then(function(msg){
 			//vscode.window.showInformationMessage("msg: " + msg)
 			if(msg == undefined) {
 				//vscode.window.showInformationMessage("msg is null" )
+				msg = "192.168.137.25";
 				return;
+			}
+			if(msg == "") {
+				msg = "192.168.137.25";
 			}
 			let ip = msg.split('.');
 			let key;
 			if(ip.length != 4){
-				vscode.window.showInformationMessage('ip format error!');
+				vscode.window.showInformationMessage(language.message.ip_format_err);
 				return;
 			}
 			for(key in ip)
@@ -242,7 +246,7 @@ export function dopi_search() : vscode.Disposable{
 			  //vscode.window.showInformationMessage("key: " + parseInt(ip[key]))
 			  let num  =Number(ip[key]);
 			  if (isNaN(num) || num > 255){
-				vscode.window.showInformationMessage('ip format error!');
+				vscode.window.showInformationMessage(language.message.ip_format_err);
 				return false;
 			  }
 			}
@@ -281,7 +285,7 @@ export function dopi_disconnect(): vscode.Disposable{
 export function micropython_run(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
 		if(!isConnect()){
-			vscode.window.showInformationMessage("请先进行设备连接")
+			vscode.window.showInformationMessage(language.message.connect_hint)
 			return;
 		}
 		if(MICROPYTHON_STATUS){
@@ -319,15 +323,48 @@ export function micropython_run(): vscode.Disposable{
 		}
 	}));
 }
+export function micropython_install(): vscode.Disposable{
+	return (vscode.commands.registerCommand('dopi.micropython_install', (port:string) => {
+		//vscode.window.showInformationMessage("Try to disconnect: " + port)
+		
+		if(!isConnect()){
+			vscode.window.showInformationMessage(language.message.connect_hint)
+			return;
+		}
+		if(MICROPYTHON_STATUS){
+			vscode.window.showInformationMessage(language.message.program_stop_hint)
+			return;
+		}
+		
+		vscode.window.showInputBox(
+			{
+				password:false,
+				ignoreFocusOut:true,
+				placeHolder:language.micropython_lib_install.placeHolder,
+				prompt:language.micropython_lib_install.prompt
 
+			}
+		).then(function(msg){
+			//vscode.window.showInformationMessage("msg: " + msg)
+			if(msg == undefined) {
+				//vscode.window.showInformationMessage("msg is null" )
+				return;
+			}
+			terminal = createTerminal()
+			let cmd:string = "micropython -m upip install ".concat(msg)
+			terminal.sendText(cmd)
+			
+		});
+	}));
+}
 export function micropython_stop(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.stop', (port:string) => {
 		if(!isConnect()){
-			vscode.window.showInformationMessage("请先进行设备连接")
+			vscode.window.showInformationMessage(language.message.connect_hint)
 			return;
 		}
-		if(!MICROPYTHON_STATUS){
-			vscode.window.showInformationMessage("没有程序正在运行")
+		if(MICROPYTHON_STATUS){
+			vscode.window.showInformationMessage(language.message.program_stop_hint)
 			return;
 		}
 		MICROPYTHON_STATUS = false;
