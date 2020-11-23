@@ -221,8 +221,8 @@ export function dopi_search() : vscode.Disposable{
 			{
 				password:false,
 				ignoreFocusOut:true,
-				placeHolder:language.connect_connect.placeHolder,
-				prompt:language.connect_connect.prompt,
+				placeHolder:language.device_connect.placeHolder,
+				prompt:language.device_connect.prompt,
 
 			}
 		).then(function(msg){
