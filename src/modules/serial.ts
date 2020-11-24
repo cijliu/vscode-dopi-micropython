@@ -276,7 +276,7 @@ export function dopi_connect(): vscode.Disposable{
 export function dopi_disconnect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.disconnect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to disconnect: " + port)
-
+		MICROPYTHON_STATUS = false;
 		//disconnectDopi(port);
 		disconnectTelnet()
 		vscode.commands.executeCommand('dopi.ui.update');
@@ -363,8 +363,8 @@ export function micropython_stop(): vscode.Disposable{
 			vscode.window.showInformationMessage(language.message.connect_hint)
 			return;
 		}
-		if(MICROPYTHON_STATUS){
-			vscode.window.showInformationMessage(language.message.program_stop_hint)
+		if(!MICROPYTHON_STATUS){
+			//vscode.window.showInformationMessage(language.message.program_stop_hint)
 			return;
 		}
 		MICROPYTHON_STATUS = false;

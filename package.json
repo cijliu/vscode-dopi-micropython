@@ -67,19 +67,8 @@
 				"command": "dopi.ui.update",
 				"title": "Update"
 			}
-		],
-		"keybindings": [{
-			"command": "dopi.run",
-			"key": "f5",
-			"mac": "f5",
-			"when": "editorTextFocus"
-		},
-		{
-			"command": "dopi.stop",
-			"key": "f6",
-			"mac": "f6",
-			"when": "editorTextFocus"
-		}]
+		]
+		
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
