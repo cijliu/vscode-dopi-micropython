@@ -84,6 +84,43 @@ function connectDopi(port:string){
 	);
 
 }
+function detectProcess(name:string){
+	let cmd:string = process.platform === 'win32' ? 'tasklist' : 'ps aux'
+	let check_cmd:string = cmd;
+	exec(check_cmd,
+		{ encoding: "binary" },
+		function(error, stdout, stderr) {
+			if(error){
+				vscode.window.showInformationMessage('failed to connect, please check if the serial port is occupied by another application');
+				return false;
+			}
+			let ret = false;
+			stdout.split('\n').filter((line) => {
+				let processMessage = line.trim().split(/\s+/)
+				let processName = processMessage[0] //processMessage[0]进程名称 ， processMessage[1]进程id
+				if (processName === name) {
+					//vscode.window.showInformationMessage(processName);
+					ret = true;
+					
+				}
+			  })
+			if(ret == false){
+				if(isConnect()){
+					if(detectTimer != undefined){
+						clearInterval(detectTimer);
+						detectTimer = undefined;
+					}
+					vscode.commands.executeCommand('dopi.disconnect');
+				}
+			}
+			//terminal.sendText('print("Welcome")');
+
+		    //vscode.commands.executeCommand('dopi.ui.update');
+		}
+	);
+	
+
+}
 function disconnectDopi(port:string){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText(String.fromCharCode(24), false);
@@ -257,6 +294,7 @@ export function dopi_search() : vscode.Disposable{
 		});
 	}));
 }
+let detectTimer:any = undefined;
 export function dopi_connect(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.connect', (port:string) => {
 		//vscode.window.showInformationMessage("Try to connect: " + port)
@@ -270,8 +308,15 @@ export function dopi_connect(): vscode.Disposable{
 		connectTelnet(ip);
 		MICROPYTHON_STATUS = false;
 		vscode.commands.executeCommand('dopi.ui.update');
-
-
+		if(detectTimer == undefined){
+			detectTimer = setInterval(function () {
+				if(isConnect()){
+					let name = process.platform === 'win32' ? 'telnet.exe' : 'telnet'
+					detectProcess(name);
+				}
+				
+			},1000);
+		}
 	}));
 }
 export function dopi_disconnect(): vscode.Disposable{
@@ -280,6 +325,7 @@ export function dopi_disconnect(): vscode.Disposable{
 		MICROPYTHON_STATUS = false;
 		//disconnectDopi(port);
 		disconnectTelnet()
+		vscode.window.showInformationMessage(language.message.disconnect_successful);
 		vscode.commands.executeCommand('dopi.ui.update');
 	}));
 }

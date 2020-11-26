@@ -10,6 +10,7 @@ import {language, setLanguage, locale} from './modules/language'
 function getExamplesPath():string {
 	return path.join(__dirname, '..', 'examples').replace(/\\/g, "/");
 }
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -41,6 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(`Open ${filePath} error, ${err}.`);
 		});
 	}));
+	
 
 }
 

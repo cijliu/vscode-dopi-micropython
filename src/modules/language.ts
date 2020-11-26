@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-18 15:54:31
- * @LastEditTime: 2020-11-18 16:51:48
+ * @LastEditTime: 2020-11-26 15:14:43
  */
 
 var dopi_language_cn = { 
@@ -15,7 +15,7 @@ var dopi_language_cn = {
     },
     message:{
         connect_successful:'连接成功',
-        disconnect_successful:'断开成功',
+        disconnect_successful:'连接已断开',
         connect_hint:"请先进行设备连接",
         ip_format_err:'IP格式错误!',
         program_stop_hint:'请先停止正在运行的程序!',
