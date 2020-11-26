@@ -268,6 +268,7 @@ export function dopi_connect(): vscode.Disposable{
 			return;
 		}
 		connectTelnet(ip);
+		MICROPYTHON_STATUS = false;
 		vscode.commands.executeCommand('dopi.ui.update');
 
 
@@ -281,6 +282,23 @@ export function dopi_disconnect(): vscode.Disposable{
 		disconnectTelnet()
 		vscode.commands.executeCommand('dopi.ui.update');
 	}));
+}
+function micropython_comments(txt:string) :string{
+	let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
+	if(s != undefined){
+		s.forEach((l, i)=>{
+			txt = txt?.replace(l,"")
+		});
+	}
+
+	s = txt?.match(new RegExp(/#.*/g))
+	console.log(s)
+	if(s != undefined){
+		s.forEach((l, i)=>{
+			txt = txt?.replace(l,"")
+		});
+	}
+	return txt;
 }
 export function micropython_run(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
@@ -299,6 +317,7 @@ export function micropython_run(): vscode.Disposable{
 		MICROPYTHON_STATUS = true;
 		let code = vscode.window.activeTextEditor?.document.getText();
 		if(code != undefined){
+			code = micropython_comments(code);
 			code = getCodeFormat(code)
 			terminal = createTerminal()
 			let lineBreak = '\n';
@@ -313,6 +332,7 @@ export function micropython_run(): vscode.Disposable{
 						if(terminal === undefined){
 							return
 						}
+
 						terminal.sendText(line,false)
 					}, i);
 
@@ -321,7 +341,9 @@ export function micropython_run(): vscode.Disposable{
 
 
 		}
+		
 	}));
+	
 }
 export function micropython_install(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.micropython_install', (port:string) => {
