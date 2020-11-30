@@ -3,7 +3,7 @@ Author: cijliu
 Date: 2020-11-26 21:47:33
 LastEditTime: 2020-11-26 21:48:30
 '''
-import VideoEncoder as venc 
+import venc
 #打开YUV测试文件，像素为320x240
 f = open("/root/ai/hx.yuv", "rb+")
 yuv = f.read()
