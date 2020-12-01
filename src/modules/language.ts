@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-18 15:54:31
- * @LastEditTime: 2020-11-30 10:13:17
+ * @LastEditTime: 2020-12-01 10:57:50
  */
 
 var dopi_language_cn = { 
@@ -23,6 +23,7 @@ var dopi_language_cn = {
     },
     label:{
         link:'点击连接设备',
+        linked:'设备已连接',
         run:'运行',
         stop:'停止',
         tutorial:'点击打开教程',
@@ -54,6 +55,7 @@ var dopi_language_en = {
     },
     label:{
         link:'Click to connect telnet',
+        linked:'Device had connected',
         run:'Run',
         stop:'Stop',
         tutorial:'Click to open Tutorial',
