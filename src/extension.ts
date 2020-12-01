@@ -1,7 +1,12 @@
+/*
+ * @Author: cijliu
+ * @Date: 2020-11-05 15:11:26
+ * @LastEditTime: 2020-12-01 14:47:24
+ */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { dopi_search, dopi_connect, dopi_disconnect, micropython_run, micropython_install, micropython_stop } from './modules/serial';
+import { dopi_search, dopi_connect, dopi_disconnect, micropython_run, micropython_install, micropython_stop,createTerminal } from './modules/serial';
 import { DopiProvider } from './modules/dopiProvider';
 import { ExamplesProvider } from './modules/examplesProvider';
 import { dopi_ui_update } from './modules/dopiUI';
@@ -25,6 +30,7 @@ function getWebViewContent(context:vscode.ExtensionContext, templatePath:string)
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	setLanguage(locale.cn)
+	createTerminal();
 	let dopiDataProvider = new DopiProvider();
 	vscode.window.registerTreeDataProvider("Dopi-export-node", dopiDataProvider);
 

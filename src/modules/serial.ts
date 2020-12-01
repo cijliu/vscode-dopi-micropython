@@ -53,9 +53,11 @@ function connectTelnet(ip:string){
 
 }
 function disconnectTelnet(){
-	let terminal:vscode.Terminal = createTerminal();
-	terminal.sendText("exit");
-	terminal.sendText(GetStopCodeFormat());
+	//let terminal:vscode.Terminal = createTerminal();
+	//terminal.sendText("exit");
+	//terminal.sendText(GetStopCodeFormat());
+	let name = process.platform === 'win32' ? 'telnet.exe' : 'telnet'
+	killProcess(name);
 	setServerIP(undefined);
 }
 function connectDopi(port:string){
@@ -83,6 +85,59 @@ function connectDopi(port:string){
 		}
 	);
 
+}
+function findProcess(name:string, cb:any) :number{
+	let cmd:string = process.platform === 'win32' ? 'tasklist' : 'ps aux'
+	let check_cmd:string = cmd;
+	exec(check_cmd,
+		{ encoding: "binary" },
+		function(error, stdout, stderr) {
+			if(error){
+				vscode.window.showInformationMessage('failed to connect, please check if the serial port is occupied by another application');
+				return 0xff;
+			}
+			stdout.split('\n').filter((line) => {
+				let processMessage = line.trim().split(/\s+/);
+				let processName = processMessage[0]; //processMessage[0]进程名称 ， processMessage[1]进程id
+				let peocessPID = parseInt(processMessage[1]);
+				if (processName === name && cb != undefined) {
+					if(!cb(processName, peocessPID)){
+						return 1;
+					}
+				}
+			})
+			return 2;
+			
+		}
+	);
+	return 0;
+}
+function killProcess (name:string) {
+	/*
+	let cmd:string = process.platform === 'win32' ? 'tasklist' : 'ps aux'
+	let check_cmd:string = cmd;
+	exec(check_cmd,
+		{ encoding: "binary" },
+		function(error, stdout, stderr) {
+			if(error){
+				vscode.window.showInformationMessage('failed to connect, please check if the serial port is occupied by another application');
+				return false;
+			}
+			stdout.split('\n').filter((line) => {
+				let processMessage = line.trim().split(/\s+/)
+				let processName = processMessage[0] //processMessage[0]进程名称 ， processMessage[1]进程id
+				let peocessPID = parseInt(processMessage[1]);
+				if (processName === name) {
+					process.kill(peocessPID);
+				}
+			  })
+		}
+	);
+	*/
+	findProcess(name,function (name:string, pid:number) {
+		process.kill(pid);
+		return true;
+	});
 }
 function detectProcess(name:string){
 	let cmd:string = process.platform === 'win32' ? 'tasklist' : 'ps aux'
@@ -113,11 +168,9 @@ function detectProcess(name:string){
 					vscode.commands.executeCommand('dopi.disconnect');
 				}
 			}
-			//terminal.sendText('print("Welcome")');
-
-		    //vscode.commands.executeCommand('dopi.ui.update');
 		}
 	);
+	
 	
 
 }
@@ -129,7 +182,7 @@ function disconnectDopi(port:string){
 	vscode.commands.executeCommand('dopi.ui.update');
 }
 let terminal:vscode.Terminal|undefined = undefined;
-function createTerminal(): vscode.Terminal {
+export function createTerminal(): vscode.Terminal {
 	if(terminal !== undefined){
 		var exist = false;
 		var terminals = vscode.window.terminals;
@@ -144,7 +197,7 @@ function createTerminal(): vscode.Terminal {
 			return terminal;
 		}
 		else{
-			console.log('kill terminal')
+			//console.log('kill terminal')
 			setCOM(undefined);
 		}
 
