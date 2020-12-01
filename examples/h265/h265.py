@@ -1,7 +1,7 @@
 '''
 Author: cijliu
 Date: 2020-11-26 21:47:33
-LastEditTime: 2020-12-01 09:48:38
+LastEditTime: 2020-12-01 10:36:47
 '''
 import venc
 #打开YUV测试文件，像素为320x240
@@ -14,7 +14,7 @@ venc.create(venc.type.H265, venc.fmt.QVGA)
 ret, size, data = venc.send(yuv)
 if ret:
     #保存
-    img = open("/root/image.h265", "wb+")
+    img = open("/root/app/res/image.h265", "wb+")
     img.write(data)
     img.close()
     print("image save successful.")
