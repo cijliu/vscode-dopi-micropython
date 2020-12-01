@@ -1,7 +1,7 @@
 '''
 Author: cijliu
 Date: 2020-11-26 22:08:19
-LastEditTime: 2020-11-27 14:00:11
+LastEditTime: 2020-12-01 09:48:47
 '''
 import venc
 #打开YUV测试文件，像素为320x240

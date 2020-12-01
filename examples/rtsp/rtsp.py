@@ -1,7 +1,7 @@
 '''
 Author: cijliu
 Date: 2020-11-26 23:06:31
-LastEditTime: 2020-11-26 23:16:36
+LastEditTime: 2020-12-01 09:48:58
 '''
 import rtsp
 import time
@@ -13,7 +13,7 @@ def find_nal(data, size):
     return nals[1:]
 
 #打开事前准备的H264数据进行传输
-f = open("/root/stream.h264","rb")
+f = open("/root/app/res/stream.h264","rb")
 data = f.read()
 size = len(data)
 f.close()

@@ -1,11 +1,11 @@
 '''
 Author: cijliu
 Date: 2020-11-26 21:47:28
-LastEditTime: 2020-11-26 21:56:40
+LastEditTime: 2020-12-01 09:48:21
 '''
 import venc
 #打开YUV测试文件，像素为320x240
-f = open("/root/ai/hx.yuv", "rb+")
+f = open("/root/app/res/image.yuv", "rb+")
 yuv = f.read()
 f.close()
 
