@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-18 15:54:31
- * @LastEditTime: 2020-12-03 14:23:15
+ * @LastEditTime: 2020-12-03 15:05:27
  */
 
 var dopi_language_cn = { 
@@ -31,7 +31,7 @@ var dopi_language_cn = {
         linked:'设备已连接',
         run:'运行',
         stop:'停止',
-        tutorial:'点击打开教程',
+        tutorial:'教程',
 
     }
 };
