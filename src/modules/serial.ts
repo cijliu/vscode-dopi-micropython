@@ -281,7 +281,7 @@ function showSerialport(){
 function getCodeFormat(code:string):string{
 	return "".concat(String.fromCharCode(5), code, String.fromCharCode(4));
 }
-function GetStopCodeFormat():string {
+export function GetStopCodeFormat():string {
 	return "".concat(String.fromCharCode(3));
 }
 function GetStartMicropython():string {
@@ -376,18 +376,25 @@ export function dopi_disconnect(): vscode.Disposable{
 	}));
 }
 function micropython_comments(txt:string) :string{
-	let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
-	if(s != undefined){
-		s.forEach((l, i)=>{
-			txt = txt?.replace(l,"")
-		});
-	}
+	
+	// let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
+	// if(s != undefined){
+	// 	s.forEach((l, i)=>{
+	// 		txt = txt?.replace(l,"")
+	// 	});
+	// }
 
-	s = txt?.match(new RegExp(/#.*/g))
-	console.log(s)
-	if(s != undefined){
-		s.forEach((l, i)=>{
-			txt = txt?.replace(l,"")
+	// s = txt?.match(new RegExp(/#.*/g))
+	// if(s != undefined){
+	// 	s.forEach((l, i)=>{
+	// 		txt = txt?.replace(l,"")
+	// 	});
+	// }
+	
+	let str = txt.match(/[\u4e00-\u9faf]+/g);
+	if(str != undefined){
+		str.forEach((l, i)=>{
+			txt = txt?.replace(l,"undefined")
 		});
 	}
 	return txt;

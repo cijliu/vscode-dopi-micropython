@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-12-02 09:52:43
- * @LastEditTime: 2020-12-03 14:24:07
+ * @LastEditTime: 2020-12-04 10:59:31
  */
 /*
  * @Author: cijliu
@@ -10,7 +10,6 @@
  */
 import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, ProviderResult, window,Event,EventEmitter,Uri,SaveDialogOptions } from "vscode";
 import * as  fs from "fs";
-import * as path from "path";
 import * as ftp from "ftp";
 import { join } from 'path';
 import { getServerIP, isConnect } from "./serial";
@@ -33,7 +32,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
         
     };
     update():void{
-        this._onDidChangeTreeData?.fire();
+        this._onDidChangeTreeData?.fire(undefined);
     }
     list(p:FtpProvider,path:string) {
         let host = getServerIP();
@@ -136,6 +135,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
         // connect to localhost:21 as anonymous
         c.connect(this.ftp_info);
     }
+    
     getTreeItem(element: FtpTreeItem) : FtpTreeItem | Thenable<FtpTreeItem> {
         return element;
     }

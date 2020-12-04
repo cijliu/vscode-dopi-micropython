@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+</head>
+<body>
+	<img id="video" src="." width="320" height="240" />
+	
+	<script>
+	var o = document.getElementById("video");
+	var path = o.src;
+	var img = new Array();
+	setInterval(refresh, 200);
+	function randomString() {
+	　　len = 64;
+	　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+	　　var maxPos = $chars.length;
+	　　var pwd = '';
+	　　for (i = 0; i < len; i++) {
+	　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+	　　}
+　　return pwd;
+}
+	function refresh(){
+		var obj = document.getElementById("video");
+		obj.src = path+"/image.bmp?rand="+randomString()
+		//obj.src = path+"/img/image"+index+".jpg"//img[index];
+	}
+	</script>
+	
+</body>
+</html>
+

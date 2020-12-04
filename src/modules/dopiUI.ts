@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-05 15:11:26
- * @LastEditTime: 2020-12-03 11:29:36
+ * @LastEditTime: 2020-12-04 15:29:18
  */
 import * as vscode from 'vscode';
 import { DopiProvider } from './dopiProvider';
@@ -75,6 +75,7 @@ export function dopi_ftp_download(p:FtpProvider): vscode.Disposable{
 		//TODO：可以获取文件内容显示出来，这里暂时只打印入参
 		//vscode.window.showInformationMessage("filePath : " + filePath);
 		//ftpDataProvider.get(filePath);
+		
 		if(label == language.ftp.sync || label == language.ftp.upload){
 			return;
 		}
@@ -90,9 +91,10 @@ export function dopi_ftp_download(p:FtpProvider): vscode.Disposable{
 		);
 	})
 }
-function getWebViewContent(context:vscode.ExtensionContext, templatePath:string) {
+export function getWebViewContent(context:vscode.ExtensionContext, templatePath:string) {
     const resourcePath = path.join(context.extensionPath, templatePath);
-    const dirPath = path.dirname(resourcePath);
+	const dirPath = path.dirname(resourcePath);
+	//console.log(resourcePath,dirPath)
     let html = fs.readFileSync(resourcePath, 'utf-8');
     // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
     html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {

@@ -6,7 +6,7 @@
 	"version": "0.1.3",
 	"icon": "images/dopi.png",
 	"engines": {
-		"vscode": "^1.27.0"
+		"vscode": "^1.50.0"
 	},
 	"categories": [
 		"Other"
@@ -38,6 +38,11 @@
 				{
 					"id": "Dopi-examples-node",
 					"name": "Examples"
+				},
+				{
+					"type": "webview",
+					"id": "Dopi-preview-node",
+					"name": "preview"
 				}
 			]
 		},
@@ -73,6 +78,17 @@
 			{
 				"command": "dopi.ftp.upload",
 				"title": "Dopi ftp upload"
+			},
+			{
+				"command": "calicoColors.addColor",
+				"category": "Calico Colors",
+				"title": "Add Color"
+			},
+			{
+				"command": "calicoColors.clearColors",
+				"category": "Calico Colors",
+				"title": "Clear Colors",
+				"icon": "$(clear-all)"
 			},
 			{
 				"command": "dopi.ui.update",
