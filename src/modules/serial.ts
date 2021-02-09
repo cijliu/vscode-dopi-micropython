@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
-import {exec, spawn} from 'child_process';
+import {exec} from 'child_process';
 import * as iconv from 'iconv-lite';
-import { worker } from 'cluster';
 import {language} from './language'
 function getSerialTollPath():string {
 	return path.join(__dirname, '..', '..', 'ampy').replace(/\\/g, "/");
@@ -42,8 +41,20 @@ function getSerialConnectCommand(port:string):string {
 	}
 	return cmd;
 }
+function getTelnetConnectCommand():string {
+	let cmd:string = '';
+	let serialtool_root_path: string = path.join(__dirname, '..', '..', 'resources','telnet').replace(/\\/g, "/");
+	if (os.type() === "Windows_NT") {
+		cmd = serialtool_root_path + "/telnet.exe ";
+	} else {
+		if (os.type() === "Linux") {
+			cmd = "telnet ";
+		} 
+	}
+	return cmd;
+}
 function connectTelnet(ip:string){
-	let cmd:string = 'telnet ';
+	let cmd:string = process.platform === 'win32' ? getTelnetConnectCommand() : 'telnet '
 	let check_cmd:string = cmd.concat(ip);
 	//vscode.window.showInformationMessage(check_cmd)
 	let terminal:vscode.Terminal = createTerminal();
@@ -113,27 +124,6 @@ function findProcess(name:string, cb:any) :number{
 	return 0;
 }
 function killProcess (name:string) {
-	/*
-	let cmd:string = process.platform === 'win32' ? 'tasklist' : 'ps aux'
-	let check_cmd:string = cmd;
-	exec(check_cmd,
-		{ encoding: "binary" },
-		function(error, stdout, stderr) {
-			if(error){
-				vscode.window.showInformationMessage('failed to connect, please check if the serial port is occupied by another application');
-				return false;
-			}
-			stdout.split('\n').filter((line) => {
-				let processMessage = line.trim().split(/\s+/)
-				let processName = processMessage[0] //processMessage[0]进程名称 ， processMessage[1]进程id
-				let peocessPID = parseInt(processMessage[1]);
-				if (processName === name) {
-					process.kill(peocessPID);
-				}
-			  })
-		}
-	);
-	*/
 	findProcess(name,function (name:string, pid:number) {
 		process.kill(pid);
 		return true;
@@ -208,6 +198,7 @@ export function createTerminal(): vscode.Terminal {
 	var lineBreak = os.type() === "Windows_NT" ? "\r\n" : "\n";
 	terminal.show();
 	terminal.sendText("".concat(lineBreak));
+	terminal.sendText("chcp 65001".concat(lineBreak));
 	//terminal.sendText("Set-ItemProperty HKCU:Console VirtualTerminalLevel -Type DWORD 1");
 	//terminal.sendText("".concat(lineBreak));
 	//terminal.sendText("clear".concat(lineBreak));
@@ -222,7 +213,7 @@ function getCOM():string|undefined{
 function setCOM(com:string|undefined){
 	COM = com;
 }
-function getServerIP():string|undefined{
+export function getServerIP():string|undefined{
 	return SERVER;
 }
 function setServerIP(ip:string|undefined){
@@ -232,6 +223,7 @@ export function isConnect(): boolean{
 	return (getCOM() !== undefined || getServerIP() !== undefined) ? true:false;
 }
 let items:vscode.QuickPickItem[] = [];
+/*
 function showSerialport(){
 	if(getCOM() === undefined){
 		let cmd:string = getSerialSearchCommand();
@@ -285,10 +277,11 @@ function showSerialport(){
 		serialport.show();
 	}
 }
+*/
 function getCodeFormat(code:string):string{
 	return "".concat(String.fromCharCode(5), code, String.fromCharCode(4));
 }
-function GetStopCodeFormat():string {
+export function GetStopCodeFormat():string {
 	return "".concat(String.fromCharCode(3));
 }
 function GetStartMicropython():string {
@@ -383,18 +376,25 @@ export function dopi_disconnect(): vscode.Disposable{
 	}));
 }
 function micropython_comments(txt:string) :string{
-	let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
-	if(s != undefined){
-		s.forEach((l, i)=>{
-			txt = txt?.replace(l,"")
-		});
-	}
+	
+	// let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
+	// if(s != undefined){
+	// 	s.forEach((l, i)=>{
+	// 		txt = txt?.replace(l,"")
+	// 	});
+	// }
 
-	s = txt?.match(new RegExp(/#.*/g))
-	console.log(s)
-	if(s != undefined){
-		s.forEach((l, i)=>{
-			txt = txt?.replace(l,"")
+	// s = txt?.match(new RegExp(/#.*/g))
+	// if(s != undefined){
+	// 	s.forEach((l, i)=>{
+	// 		txt = txt?.replace(l,"")
+	// 	});
+	// }
+	
+	let str = txt.match(/[\u4e00-\u9faf]+/g);
+	if(str != undefined){
+		str.forEach((l, i)=>{
+			txt = txt?.replace(l,"undefined")
 		});
 	}
 	return txt;

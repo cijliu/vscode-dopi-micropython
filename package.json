@@ -3,11 +3,10 @@
 	"displayName": "Dopi",
 	"publisher": "cijliu",
 	"description": "",
-	"version": "0.1.2",
+	"version": "0.2.1",
 	"icon": "images/dopi.png",
-
 	"engines": {
-		"vscode": "^1.27.0"
+		"vscode": "^1.50.0"
 	},
 	"categories": [
 		"Other"
@@ -33,8 +32,17 @@
 					"name": "Debug"
 				},
 				{
+					"id": "Dopi-ftp-node",
+					"name": "resources"
+				},
+				{
 					"id": "Dopi-examples-node",
 					"name": "Examples"
+				},
+				{
+					"type": "webview",
+					"id": "Dopi-preview-node",
+					"name": "preview"
 				}
 			]
 		},
@@ -64,11 +72,29 @@
 				"title": "Dopi Stop Micropython"
 			},
 			{
+				"command": "dopi.ftp.sync",
+				"title": "Dopi ftp sync"
+			},
+			{
+				"command": "dopi.ftp.upload",
+				"title": "Dopi ftp upload"
+			},
+			{
+				"command": "calicoColors.addColor",
+				"category": "Calico Colors",
+				"title": "Add Color"
+			},
+			{
+				"command": "calicoColors.clearColors",
+				"category": "Calico Colors",
+				"title": "Clear Colors",
+				"icon": "$(clear-all)"
+			},
+			{
 				"command": "dopi.ui.update",
 				"title": "Update"
 			}
 		]
-		
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -83,13 +109,14 @@
 		"url": "https://github.com/cijliu/vscode-dopi-micropython"
 	},
 	"devDependencies": {
+		"@types/ftp": "^0.3.31",
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^7.0.1",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.27.0",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.18.0",
 		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@typescript-eslint/parser": "^2.18.0",
+		"eslint": "^6.8.0",
 		"glob": "^7.1.6",
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
@@ -100,9 +127,10 @@
 		"@types/mocha": "^7.0.1",
 		"@types/node": "^12.11.7",
 		"@types/vscode": "^1.27.0",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.18.0",
 		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@typescript-eslint/parser": "^2.18.0",
+		"eslint": "^6.8.0",
+		"ftp": "^0.3.10",
 		"glob": "^7.1.6",
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",

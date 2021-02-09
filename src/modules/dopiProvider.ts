@@ -1,15 +1,15 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-05 15:11:26
- * @LastEditTime: 2020-11-30 10:12:24
+ * @LastEditTime: 2020-12-03 15:34:09
  */
-import { TreeDataProvider, Event, TreeItem, TreeItemCollapsibleState, Uri, ProviderResult } from "vscode";
+import { TreeDataProvider, Event, TreeItem, TreeItemCollapsibleState, Uri, ProviderResult, EventEmitter } from "vscode";
 import * as vscode from 'vscode';
 import { join } from 'path';
 import {language} from './language';
 export class DopiProvider implements TreeDataProvider<DataItem> {
-    onDidChangeTreeData?: Event<DataItem | null | undefined> | undefined;
-
+    private _onDidChangeTreeData?: EventEmitter<DataItem | undefined> | undefined = new EventEmitter <DataItem | undefined > ();
+    readonly onDidChangeTreeData?: Event < DataItem | null|undefined > = this._onDidChangeTreeData?.event;
     data: DataItem[];
     connect: boolean = false;
     device = new DataItem('Serial');
@@ -47,7 +47,7 @@ export class DopiProvider implements TreeDataProvider<DataItem> {
     }
     update(){
         this.device.iconPath = Uri.file(join(this.resources_path, this.connect?'serial-connect.svg':'serial-disconnect.svg'));
-        
+        this._onDidChangeTreeData?.fire(undefined);
     }
     getTreeItem(element: DataItem): TreeItem | Thenable<TreeItem> {
         return element;

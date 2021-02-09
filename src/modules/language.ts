@@ -1,7 +1,7 @@
 /*
  * @Author: cijliu
  * @Date: 2020-11-18 15:54:31
- * @LastEditTime: 2020-12-01 10:57:50
+ * @LastEditTime: 2020-12-03 15:05:27
  */
 
 var dopi_language_cn = { 
@@ -21,12 +21,17 @@ var dopi_language_cn = {
         program_stop_hint:'请先停止正在运行的程序!',
         welcome:'欢迎使用Dopi.',
     },
+    ftp:{
+        err:"无法从FTP下载或上传文件",
+        sync:"点击同步",
+        upload:"上传文件"
+    },
     label:{
         link:'点击连接设备',
         linked:'设备已连接',
         run:'运行',
         stop:'停止',
-        tutorial:'点击打开教程',
+        tutorial:'教程',
 
     }
 };
@@ -52,6 +57,11 @@ var dopi_language_en = {
         program_stop_hint:'Please stop running code!',
         welcome:'Welcome to Dopi.',
         
+    },
+    ftp:{
+        err:"FTP download or upload file fail",
+        sync:"refresh",
+        upload:"upload"
     },
     label:{
         link:'Click to connect telnet',
