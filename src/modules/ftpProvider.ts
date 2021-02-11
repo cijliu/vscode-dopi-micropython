@@ -20,6 +20,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
     private _onDidChangeTreeData?: EventEmitter<FtpTreeItem | undefined> | undefined = new EventEmitter <FtpTreeItem | undefined > ();
     readonly onDidChangeTreeData?: Event < FtpTreeItem | null|undefined > = this._onDidChangeTreeData?.event;
     ftp_path:string = "./app/res";
+    py_ftp_path:string = "./app/py";
     sync = new FtpTreeItem('','');
     upload = new FtpTreeItem('','');
     resources_path = join(__dirname, '..','..','resources');
@@ -29,7 +30,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
         port:21,
         user:"anonymous",
         password:"anonymous"
-        
+
     };
     update():void{
         this._onDidChangeTreeData?.fire(undefined);
@@ -58,11 +59,39 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
                 c.end();
                 c.destroy();
             });
-    
+
         });
         // connect to localhost:21 as anonymous
         c.connect(this.ftp_info);
-        
+
+    }
+    pyfile(p:FtpProvider,buffer:string, save:string){
+        let host = getServerIP();
+        if(host == undefined){
+            window.showInformationMessage(language.message.connect_hint);
+            return;
+        }
+        this.ftp_info.host = host;
+        let c = new ftp()
+        c.on('ready', function() {
+            //console.log("on")
+            c.cwd(p.py_ftp_path,function(err,curdir){
+                //console.log(err,curdir)
+            });
+            c.put(buffer,save, function(err) {
+                if (err) {
+                    //console.log(path,save)
+                    window.showInformationMessage(language.ftp.err);
+                    throw err;
+                }
+                //p.list(p,p.py_ftp_path);
+                c.end();
+              });
+
+        });
+        //console.log("err")
+        // connect to localhost:21 as anonymous
+        c.connect(this.ftp_info);
     }
     put(p:FtpProvider,buffer:string, save:string){
         let host = getServerIP();
@@ -86,7 +115,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
                 p.list(p,p.ftp_path);
                 c.end();
               });
-    
+
         });
         //console.log("err")
         // connect to localhost:21 as anonymous
@@ -110,7 +139,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
         this.upload.command = { command: 'dopi.ftp.upload', title: "Connect",arguments:[]};
         //this.list(this, path);
     }
-    
+
     get(path:string, save:string){
         let host = getServerIP();
         if(host == undefined){
@@ -124,18 +153,18 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
                 if (err){
                     window.showInformationMessage(language.ftp.err);
                     throw err;
-                } 
+                }
                 stream.once('close', function() { c.end(); });
                 stream.pipe(fs.createWriteStream(save));
-                
+
             })
-    
+
         });
-        
+
         // connect to localhost:21 as anonymous
         c.connect(this.ftp_info);
     }
-    
+
     getTreeItem(element: FtpTreeItem) : FtpTreeItem | Thenable<FtpTreeItem> {
         return element;
     }
@@ -143,7 +172,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
     getChildren(element?: FtpTreeItem | undefined): ProviderResult<FtpTreeItem[]>{
         return this.data;
     }
- 
+
 
 }
 

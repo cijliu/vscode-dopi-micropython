@@ -6,7 +6,7 @@ VSCode Dopi插件，支持Micropython交互环境.
 
 *   支持Telnet连接
 *   支持FTP文件传输
-*   支持Micropython交互编程
+*   支持Micropython交互编程，同目录下模块可引用
 
 ## 使用说明
 

@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as os from 'os';
 import {exec} from 'child_process';
 import * as iconv from 'iconv-lite';
-import {language} from './language'
+import {language} from './language';
+import { FtpProvider } from './ftpProvider';
+import * as fs from 'fs';
 function getSerialTollPath():string {
 	return path.join(__dirname, '..', '..', 'ampy').replace(/\\/g, "/");
 }
@@ -49,7 +51,7 @@ function getTelnetConnectCommand():string {
 	} else {
 		if (os.type() === "Linux") {
 			cmd = "telnet ";
-		} 
+		}
 	}
 	return cmd;
 }
@@ -60,6 +62,8 @@ function connectTelnet(ip:string){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText(GetStopCodeFormat());
 	terminal.sendText(check_cmd);
+	terminal.sendText("mkdir -p /root/app/py && export MICROPYPATH=/root/app/py");
+
 
 
 }
@@ -118,7 +122,7 @@ function findProcess(name:string, cb:any) :number{
 				}
 			})
 			return 2;
-			
+
 		}
 	);
 	return 0;
@@ -146,7 +150,7 @@ function detectProcess(name:string){
 				if (processName === name) {
 					//vscode.window.showInformationMessage(processName);
 					ret = true;
-					
+
 				}
 			  })
 			if(ret == false){
@@ -160,8 +164,8 @@ function detectProcess(name:string){
 			}
 		}
 	);
-	
-	
+
+
 
 }
 function disconnectDopi(port:string){
@@ -287,6 +291,9 @@ export function GetStopCodeFormat():string {
 function GetStartMicropython():string {
 	return "".concat("micropython");
 }
+function GetRunMicropython(filename:string):string {
+	return "".concat("micropython ","/root/app/py/"+filename);
+}
 function GetStopMicropython():string {
 	return "".concat(String.fromCharCode(4));
 }
@@ -360,7 +367,7 @@ export function dopi_connect(): vscode.Disposable{
 					let name = process.platform === 'win32' ? 'telnet.exe' : 'telnet'
 					detectProcess(name);
 				}
-				
+
 			},1000);
 		}
 	}));
@@ -376,7 +383,7 @@ export function dopi_disconnect(): vscode.Disposable{
 	}));
 }
 function micropython_comments(txt:string) :string{
-	
+
 	// let s = txt?.match(new RegExp(/'''[\s\S]*'''/g))
 	// if(s != undefined){
 	// 	s.forEach((l, i)=>{
@@ -390,7 +397,7 @@ function micropython_comments(txt:string) :string{
 	// 		txt = txt?.replace(l,"")
 	// 	});
 	// }
-	
+
 	let str = txt.match(/[\u4e00-\u9faf]+/g);
 	if(str != undefined){
 		str.forEach((l, i)=>{
@@ -399,7 +406,50 @@ function micropython_comments(txt:string) :string{
 	}
 	return txt;
 }
-export function micropython_run(): vscode.Disposable{
+export function micropython_build(p:FtpProvider): vscode.Disposable{
+	return (vscode.commands.registerCommand('dopi.build', (port:string) => {
+		if(!isConnect()){
+			vscode.window.showInformationMessage(language.message.connect_hint)
+			return;
+		}
+		if(MICROPYTHON_STATUS){
+			vscode.commands.executeCommand('dopi.stop');
+			setTimeout(()=>{
+				vscode.commands.executeCommand('dopi.run');
+			}, 500);
+			return;
+
+		}
+		MICROPYTHON_STATUS = true;
+		if(vscode.window.activeTextEditor?.document.fileName != undefined){
+			var pyname = path.basename(vscode.window.activeTextEditor?.document.fileName);
+			var dir = path.dirname(vscode.window.activeTextEditor?.document.fileName);
+			//vscode.window.showInformationMessage(dir);
+			var fsReadDir = fs.readdirSync(dir, 'utf-8');
+			fsReadDir.forEach(fileName => {
+                var filePath = path.join(dir, fileName);//用绝对路径
+                if(fs.statSync(filePath).isDirectory()){//目录
+                    //treeDir.push(new ExamplesTreeItem(fileName, parentPath, TreeItemCollapsibleState.Collapsed));
+                }
+                else{//文件
+					//treeDir.push(new ExamplesTreeItem(fileName, parentPath, TreeItemCollapsibleState.None));
+					if(path.extname(fileName) === ".py"){
+						vscode.window.showInformationMessage(filePath);
+						p.pyfile(p,fs.readFileSync(filePath,''), fileName);
+
+					}
+
+
+                }
+			});
+			terminal = createTerminal();
+			terminal.sendText(GetRunMicropython(pyname));
+			//vscode.window.showInformationMessage(path.dirname(vscode.window.activeTextEditor?.document.fileName));
+		}
+	}));
+}
+
+export function micropython_run(p:FtpProvider): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.run', (port:string) => {
 		if(!isConnect()){
 			vscode.window.showInformationMessage(language.message.connect_hint)
@@ -414,6 +464,29 @@ export function micropython_run(): vscode.Disposable{
 
 		}
 		MICROPYTHON_STATUS = true;
+		if(vscode.window.activeTextEditor?.document.fileName != undefined){
+			var pyname = path.basename(vscode.window.activeTextEditor?.document.fileName);
+			var dir = path.dirname(vscode.window.activeTextEditor?.document.fileName);
+			//vscode.window.showInformationMessage(dir);
+			var fsReadDir = fs.readdirSync(dir, 'utf-8');
+			fsReadDir.forEach(fileName => {
+                var filePath = path.join(dir, fileName);//用绝对路径
+                if(fs.statSync(filePath).isDirectory()){//目录
+                    //treeDir.push(new ExamplesTreeItem(fileName, parentPath, TreeItemCollapsibleState.Collapsed));
+                }
+                else{//文件
+					//treeDir.push(new ExamplesTreeItem(fileName, parentPath, TreeItemCollapsibleState.None));
+					if(path.extname(fileName) === ".py"){
+						vscode.window.showInformationMessage(filePath);
+						p.pyfile(p,fs.readFileSync(filePath,''), fileName);
+
+					}
+
+
+                }
+			});
+			//vscode.window.showInformationMessage(path.dirname(vscode.window.activeTextEditor?.document.fileName));
+		}
 		let code = vscode.window.activeTextEditor?.document.getText();
 		if(code != undefined){
 			code = micropython_comments(code);
@@ -440,14 +513,14 @@ export function micropython_run(): vscode.Disposable{
 
 
 		}
-		
+
 	}));
-	
+
 }
 export function micropython_install(): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.micropython_install', (port:string) => {
 		//vscode.window.showInformationMessage("Try to disconnect: " + port)
-		
+
 		if(!isConnect()){
 			vscode.window.showInformationMessage(language.message.connect_hint)
 			return;
@@ -456,7 +529,7 @@ export function micropython_install(): vscode.Disposable{
 			vscode.window.showInformationMessage(language.message.program_stop_hint)
 			return;
 		}
-		
+
 		vscode.window.showInputBox(
 			{
 				password:false,
@@ -474,7 +547,7 @@ export function micropython_install(): vscode.Disposable{
 			terminal = createTerminal()
 			let cmd:string = "micropython -m upip install ".concat(msg)
 			terminal.sendText(cmd)
-			
+
 		});
 	}));
 }

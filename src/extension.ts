@@ -23,7 +23,7 @@ function getFTPPath():string {
 }
 function yuv2rgb(){
 	let yuv_path = path.join(__dirname, '..', 'resources','image.yuv').replace(/\\/g, "/");
-	
+
 }
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push( dopi_search() );
 	context.subscriptions.push( dopi_connect() );
 	context.subscriptions.push( dopi_disconnect() );
-	context.subscriptions.push( micropython_run() );
+	context.subscriptions.push( micropython_run(ftpDataProvider) );
 	context.subscriptions.push( micropython_install() );
 	context.subscriptions.push( micropython_stop() );
 	context.subscriptions.push( dopi_ftp_sync(ftpDataProvider) );
@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const video_provider = new VideoViewProvider(context.extensionUri, context);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(VideoViewProvider.viewType, video_provider));
-	
+
 
 }
 
