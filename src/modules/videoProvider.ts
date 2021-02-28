@@ -21,6 +21,7 @@ function getYUVCommand():string {
 
 	return cmd;
 }
+//var tick:number = 0;
 export class VideoViewProvider implements vscode.WebviewViewProvider {
 
 	public static readonly viewType = 'Dopi-preview-node';
@@ -40,10 +41,9 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
 	) {
 		this._context = context;
 		fs.copyFileSync(join(__dirname, '..','..','resources','dopi.jpg'), join(__dirname, '..','..','resources','image.bmp'));
-        if(this.videoTimer == undefined){
+        if(this.videoTimer === undefined){
 			this.videoTimer = setInterval(function (p:VideoViewProvider) {
-				p.get_image("./app/mem/image.yuv")
-
+				p.get_image("./app/mem/image.yuv");
 			},200,this);
 		}
 	}
@@ -53,15 +53,16 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
 		let out_path = join(__dirname, '..','..','resources','out.bmp');
 		let dopi_path = join(__dirname, '..','..','resources','dopi.jpg');
         let host = getServerIP();
-        if(host == undefined){
+        if(host === undefined){
 			fs.copyFileSync(dopi_path, image_path);
             return;
         }
         this.ftp_info.host = host;
-		let c = new ftp()
-
+		let c = new ftp();
         c.on('ready', function() {
-            //console.log("get image")
+            console.log("get image");
+			//window.showInformationMessage("get image:", tick.toString());
+			//tick = tick + 1;
             c.get(path,function(err, stream){
                 if (err){
 					//console.log("get fail");
@@ -69,19 +70,32 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
                         fs.copyFileSync(dopi_path, image_path);
                     }
                     c.end();
+					c.destroy();
                     return;
                     //throw err;
                 }
-                stream.once('close', function() { });
+                stream.once('close', function() {  });
+				fs.access(yuv_path, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+					if (err){
+						//console.log("%s doesn't exist", yuv_path);
+						if(err.code === "EPERM"){
+							fs.unlink(yuv_path,err=>{
+								if(err){
+									console.log(err);
+								}
+							});
+						}
+					}
+				});
 				stream.pipe(fs.createWriteStream(yuv_path));
 				stream.on("end", ()=>{
 					exec(getYUVCommand(),
 						{ encoding: "binary" },
 						function(error, stdout, stderr) {
-							//if(error){
+							if(error && err !== undefined){
 								//console.log('failed:',err);
-								//return;
-							//}
+								return;
+							}
 							fs.copyFileSync(out_path, image_path);
 							c.delete(path,function(err){
 								if (err){
@@ -99,7 +113,7 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
 				});
 
 
-            })
+            });
 
 
         });
@@ -134,7 +148,7 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
 
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
-		return getWebViewContent(this._context,'resources/video.html' )
+		return getWebViewContent(this._context,'resources/video.html' );
 	}
 }
 

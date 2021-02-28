@@ -29,7 +29,8 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
         host:"192.168.137.25",
         port:21,
         user:"anonymous",
-        password:"anonymous"
+        password:"anonymous",
+        connTimeout:3000
 
     };
     update():void{
@@ -37,13 +38,13 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
     }
     list(p:FtpProvider,path:string) {
         let host = getServerIP();
-        if(host == undefined){
+        if(host === undefined){
             window.showInformationMessage(language.message.connect_hint);
             return;
         }
         this.ftp_info.host = host;
         p.data = [p.sync,p.upload];
-        let c = new ftp()
+        let c = new ftp();
         c.on('ready', function() {
             c.list(path,function(err:any, list:ftp.ListingElement[]) {
                 if(err) {
@@ -51,7 +52,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
                     throw err;
                 }
                 list.forEach(element => {
-                    p.data.push(new FtpTreeItem(element.name, path))
+                    p.data.push(new FtpTreeItem(element.name, path));
                     //console.log(element.type,element.name)
                 });
                 //console.dir(list);
@@ -67,12 +68,13 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
     }
     pyfile(p:FtpProvider,buffer:string, save:string){
         let host = getServerIP();
-        if(host == undefined){
+        if(host === undefined){
             window.showInformationMessage(language.message.connect_hint);
             return;
         }
         this.ftp_info.host = host;
-        let c = new ftp()
+        let c = new ftp();
+
         c.on('ready', function() {
             //console.log("on")
             c.cwd(p.py_ftp_path,function(err,curdir){
@@ -95,12 +97,12 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
     }
     put(p:FtpProvider,buffer:string, save:string){
         let host = getServerIP();
-        if(host == undefined){
+        if(host === undefined){
             window.showInformationMessage(language.message.connect_hint);
             return;
         }
         this.ftp_info.host = host;
-        let c = new ftp()
+        let c = new ftp();
         c.on('ready', function() {
             //console.log("on")
             c.cwd(p.ftp_path,function(err,curdir){
@@ -142,12 +144,12 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
 
     get(path:string, save:string){
         let host = getServerIP();
-        if(host == undefined){
+        if(host === undefined){
             window.showInformationMessage(language.message.connect_hint);
             return;
         }
         this.ftp_info.host = host;
-        let c = new ftp()
+        let c = new ftp();
         c.on('ready', function() {
             c.get(path,function(err, stream){
                 if (err){
@@ -157,7 +159,7 @@ export class FtpProvider implements TreeDataProvider<FtpTreeItem> {
                 stream.once('close', function() { c.end(); });
                 stream.pipe(fs.createWriteStream(save));
 
-            })
+            });
 
         });
 

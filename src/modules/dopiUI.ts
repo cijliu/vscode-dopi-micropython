@@ -25,13 +25,13 @@ export function dopi_ui_update(dopiDataProvider:DopiProvider): vscode.Disposable
 			dopiDataProvider.update();
 			//vscode.window.registerTreeDataProvider("Dopi-export-node", dopiDataProvider);
 		},1000)
-		
+
 
 	}));
 }
 export function dopi_ftp_sync(p:FtpProvider): vscode.Disposable{
 	return (vscode.commands.registerCommand('dopi.ftp.sync', () => {
-		//vscode.window.showInformationMessage("Try to disconnect: " + p.ftp_path)
+		//vscode.window.showInformationMessage("Try to sync: " + p.ftp_path)
 		p.list(p,p.ftp_path);
 
 	}));
@@ -41,8 +41,8 @@ export function dopi_ftp_upload(p:FtpProvider): vscode.Disposable{
 		//vscode.window.showInformationMessage("upload: " + p.ftp_path)
 		const option:vscode.OpenDialogOptions = {
 			canSelectFiles:true,
-            canSelectFolders:false, 
-            canSelectMany:false, 
+            canSelectFolders:false,
+            canSelectMany:false,
 			defaultUri:vscode.Uri.file(path.join("./")),
 		};
 		vscode.window.showOpenDialog(option).then(
@@ -75,7 +75,7 @@ export function dopi_ftp_download(p:FtpProvider): vscode.Disposable{
 		//TODO：可以获取文件内容显示出来，这里暂时只打印入参
 		//vscode.window.showInformationMessage("filePath : " + filePath);
 		//ftpDataProvider.get(filePath);
-		
+
 		if(label == language.ftp.sync || label == language.ftp.upload){
 			return;
 		}

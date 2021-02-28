@@ -477,7 +477,7 @@ export function micropython_run(p:FtpProvider): vscode.Disposable{
                 else{//文件
 					//treeDir.push(new ExamplesTreeItem(fileName, parentPath, TreeItemCollapsibleState.None));
 					if(path.extname(fileName) === ".py"){
-						vscode.window.showInformationMessage(filePath);
+						//vscode.window.showInformationMessage(filePath);
 						p.pyfile(p,fs.readFileSync(filePath,''), fileName);
 
 					}
