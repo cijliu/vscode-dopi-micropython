@@ -60,7 +60,7 @@ export class VideoViewProvider implements vscode.WebviewViewProvider {
         this.ftp_info.host = host;
 		let c = new ftp();
         c.on('ready', function() {
-            console.log("get image");
+            //console.log("get image");
 			//window.showInformationMessage("get image:", tick.toString());
 			//tick = tick + 1;
             c.get(path,function(err, stream){

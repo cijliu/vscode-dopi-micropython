@@ -62,8 +62,8 @@ function connectTelnet(ip:string){
 	let terminal:vscode.Terminal = createTerminal();
 	terminal.sendText(GetStopCodeFormat());
 	terminal.sendText(check_cmd);
-	terminal.sendText("mkdir -p /root/app/py && export MICROPYPATH=/root/app/py");
-
+	terminal.sendText("mkdir -p /root/app/py && export MICROPYPATH=/root/app/py\n");
+	terminal.sendText("mkdir -p /root/app/mem && mount -t tmpfs -o size=5M app /root/app/mem\n");
 
 
 }
